@@ -1,47 +1,34 @@
 <?php
 
-// Thiết lập header để nhận và trả về dữ liệu JSON
-header('Content-Type: application/json');
+// Bao gồm tệp chứa lớp envLoaderService
+require_once 'config/envLoaderService.php';
+require_once 'config/database.php';
+require_once 'config/header.php';
+require_once 'config/setResposHandler.php';
 
-// Lấy phương thức HTTP (GET, POST, PUT, DELETE)
-$method = $_SERVER['REQUEST_METHOD'];
 
-// Lấy đường dẫn URL
-$request = explode('/', trim($_SERVER['PATH_INFO'],'/'));
-
-// Đảm bảo yêu cầu đúng với cấu trúc
-if (count($request) > 0) {
-    $resource = array_shift($request);
+function isDirectSubclass($childClass, $parentClass) {
+  $parent = get_parent_class($childClass);
+  return $parent === $parentClass;
 }
+// Tải các biến môi trường từ tệp .env
+envLoaderService::loadEnv();
+// Lấy giá trị của biến môi trường DB_HOST
+$DB_HOST = envLoaderService::getEnv("DB_HOST");
+$DB_NAME = envLoaderService::getEnv("DB_NAME");
+$DB_USER = envLoaderService::getEnv("DB_USER");
+$DB_PASS = envLoaderService::getEnv("DB_PASS");
 
-// Phân tích đường dẫn và gọi hàm tương ứng
-switch ($method) {
-    case 'GET':
-        if ($resource === 'user') {
-            include 'api/user.php';
-            getUser($request);
-        } elseif ($resource === 'product') {
-            include 'api/product.php';
-            getProduct($request);
-        } else {
-            echo json_encode(['message' => 'Resource not found']);
-        }
-        break;
+// Lấy thể hiện duy nhất của lớp Database
+$db = Database::getInstance($DB_HOST, $DB_USER, $DB_PASS, $DB_NAME);
+// Lấy kết nối
+$conn = $db->getConnection();
+// echo "I love {$DB_HOST}!";
+// Tạo mảng dữ liệu
+$response = array(
+    'message' => 'Hello, World!'
+);
 
-    case 'POST':
-        if ($resource === 'user') {
-            include 'api/user.php';
-            createUser($_POST);
-        } elseif ($resource === 'product') {
-            include 'api/product.php';
-            createProduct($_POST);
-        } else {
-            echo json_encode(['message' => 'Resource not found']);
-        }
-        break;
-
-    // Các phương thức PUT và DELETE có thể được thêm vào sau nếu cần
-    default:
-        echo json_encode(['message' => 'Method Not Allowed']);
-        break;
-}
+// Chuyển mảng thành chuỗi JSON và in ra
+echo json_encode($response);
+?>
