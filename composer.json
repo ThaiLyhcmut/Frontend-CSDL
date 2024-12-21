@@ -1,0 +1,18 @@
+{
+    "name": "learnphp/product-management",
+    "autoload": {
+        "psr-4": {
+            "Learnphp\\ProductManagement\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Thaily",
+            "email": "lyvinhthai321@gmail.com"
+        }
+    ],
+    "scripts": {
+        "start": "php -S localhost:8000 main.php"
+    },
+    "require": {}
+}
